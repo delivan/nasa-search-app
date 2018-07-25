@@ -6,12 +6,41 @@ import './App.css';
 
 class App extends Component {
 	state = {
-		
+		param: '',
+		datas: [],
+		currentIndex: 0,
+		showingDatas: []
 	}
 
 	componentDidMount = () => {
+		window.addEventListener('scroll', this._handleOnScroll);
+
 		this._getNasaData();
 	}
+
+	_createShowingDatas = () => {
+		const { datas, currentIndex } = this.state;
+		const showingDatas = datas.slice(currentIndex, currentIndex + 20);
+		this.setState({
+			currentIndex: currentIndex + 20,
+			showingDatas: this.state.showingDatas.concat(showingDatas),
+		});
+	}
+
+
+	_handleOnScroll = () => {
+    // document.documentElement.scrollTop: scoll할 수 있는 높이 중에서 가장 위의 위치
+    // document.documentElement.scrollHeight: scoll할 수 있는 총 길이 + 보여지는 화면의 높이 
+    // document.documentElement.clientHeight, window.innerHeight: 보여지는 화면의 높이
+    const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
+    const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
+    const clientHeight = document.documentElement.clientHeight || window.innerHeight;
+    const scrolledToBottom = Math.ceil(scrollTop + clientHeight) >= scrollHeight;
+    
+    if (scrolledToBottom) {
+			this._createShowingDatas();
+    }
+  }
 
 	_getNasaData = async () => {
 		let param = document.getElementById('search-input').value;
@@ -23,10 +52,12 @@ class App extends Component {
 			return data;
 		});
 		this.setState({
+			param,
 			datas, 
-			param
+			currentIndex: 0,
+			showingDatas: []
 		});
-		
+		this._createShowingDatas();
 	}
 	
 	_callApi = (param) => {
@@ -40,7 +71,7 @@ class App extends Component {
 	}
 	
     render() {
-		const { datas, param } = this.state;
+		const { showingDatas, param } = this.state;
 		return (
 		  <div className="App">
 			<header className="App-header">
@@ -51,7 +82,7 @@ class App extends Component {
 				</div>
 			</header>
 			<div className="App-content">
-				{ datas ? <NasaList datas={datas} param={param}/> : 'Please wait..'}
+				{ showingDatas ? <NasaList datas={showingDatas} param={param}/> : 'Please wait..'}
 			</div>
 		  </div>
 		);

@@ -5,17 +5,6 @@ import PropTypes from 'prop-types';
 import './NasaList.css';
 
 class NasaList extends Component {
-	// state = {
-	// 	loadingState: false,
-	// 	loadingLength: 10
-	// }
-
-	// componentDidMount = () => {
-	// 	window.addEventListener("scroll", () => {
-	// 	  if (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 500){
-	// 		this._loadMoreItems();
-	// 	  }
-	// });
 
 	// _loadMoreData = () => {
 	// 	if(this.state.loadingState){
