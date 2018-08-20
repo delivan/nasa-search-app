@@ -9,20 +9,28 @@ class App extends Component {
 		param: '',
 		datas: [],
 		currentIndex: 0,
-		showingDatas: []
+		showingDatas: [],
+		error: ''
 	}
 
 	componentDidMount = () => {
 		window.addEventListener('scroll', this._handleOnScroll);
+		const input = document.getElementById('search-input');
+		input.addEventListener("keyup", function(event) {
+			event.preventDefault();
+			if (event.keyCode === 13) {
+				document.getElementById("search-button").click();
+			}
+		});
 
 		this._getNasaData();
 	}
 
 	_createShowingDatas = () => {
 		const { datas, currentIndex } = this.state;
-		const showingDatas = datas.slice(currentIndex, currentIndex + 20);
+		const showingDatas = datas.slice(currentIndex, currentIndex + 21);
 		this.setState({
-			currentIndex: currentIndex + 20,
+			currentIndex: currentIndex + 21,
 			showingDatas: this.state.showingDatas.concat(showingDatas),
 		});
 	}
@@ -48,41 +56,48 @@ class App extends Component {
 			param = "seoul";
 		}
 		const nasaData = await this._callApi(param);
-		const datas = nasaData.map(data => {
-			return data;
-		});
-		this.setState({
-			param,
-			datas, 
-			currentIndex: 0,
-			showingDatas: []
-		});
-		this._createShowingDatas();
+		if (nasaData) {
+			const datas = nasaData.map(data => {
+				return data;
+			});
+			this.setState({
+				param,
+				datas, 
+				currentIndex: 0,
+				showingDatas: []
+			});
+			this._createShowingDatas();
+		}
 	}
 	
 	_callApi = (param) => {
 		return axios.get("https://images-api.nasa.gov/search?q=" + param)
 		.then(response =>  response.data.collection.items)
-		.catch(err => console.log(err));
+		.catch(error => {
+			this.setState({
+				error: error.response.reason
+			});
+		});
 		// return fetch("https://images-api.nasa.gov/search?q=" + param)
 		// .then(response =>  response.json())
 		// .then(json => json.collection.items)
 		// .catch(err => console.log(err));
 	}
 	
-    render() {
-		const { showingDatas, param } = this.state;
+  render() {
+		const { showingDatas, param, error } = this.state;
 		return (
 		  <div className="App">
 			<header className="App-header">
 				<h1 className="App-title">Welcome to Nasa Data Search App</h1>
 				<div className="search-container">
 					<input id="search-input" type="text" placeholder="Search for...(e.g. seoul)" />
-					<button id="search-button" onClick={this._getNasaData}>Search</button>
+					<button type="submit" id="search-button" onClick={this._getNasaData}>Search</button>
 				</div>
 			</header>
-			<div className="App-content">
-				{ showingDatas ? <NasaList datas={showingDatas} param={param}/> : 'Please wait..'}
+			<div className="container">
+				<h1 id="Nasa-param">{param}</h1>
+				{ showingDatas ? <NasaList datas={showingDatas} param={param}/> : {error}}
 			</div>
 		  </div>
 		);

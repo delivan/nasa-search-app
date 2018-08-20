@@ -4,29 +4,30 @@ import LinesEllipsis from 'react-lines-ellipsis';
 
 const NasaContent = ({imgPath, title, center, date}) => {
 	return (
-		<div className="Nasa-content">
-		  <div className="Nasa-content-rows">
-			<NasaImg imgPath={imgPath} title={title}/>
-		  </div>
-		  <div className="Nasa-rontent-rows">
-			<b>Title</b>:
-			<LinesEllipsis
-            	text={title}
-            	maxLine='3'
-            	ellipsis='...'
-                trimRight
-                basedOn='letters'
-            />
-			<b>Center</b>: {center}<br />
-			<b>Date</b>: {date}<br />
-		  </div>
+		<div className="col-md-4">
+			<div className="card mb-4 shadow-sm">
+				<NasaImg imgPath={imgPath} title={title}/>
+				<div className="card-body">
+					<b>Title</b>:&nbsp;
+					<LinesEllipsis
+						className="card-title"
+						text={title}
+						maxLine='1'
+						ellipsis='...'
+						trimRight
+						basedOn='letters'
+					/><br />
+					<b>Center</b>: {center}<br />
+					<b>Date</b>: {date}<br />
+				</div>
+			</div>
 		</div>
 	);
 }
 
 const NasaImg = ({imgPath, title}) => {
   return (
-	<img className="Nasa-img" src={imgPath} alt={title} />
+	<img className="card-img-top" src={imgPath} alt={title} />
   )
 }
 
